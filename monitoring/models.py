@@ -10,6 +10,10 @@ class Filtre(models.Model):
     actif = models.BooleanField(default=True)
 
 class Capteur(models.Model):
-    filtre = models.OneToOneField(Filtre, on_delete=models.CASCADE, related_name='capteur')
-    type = models.CharField(max_length=50)
-    valeur = models.FloatField()
+    filtre = models.ForeignKey(Filtre, on_delete=models.CASCADE)
+    nom = models.CharField(max_length=100)  # ← nouveau champ
+    type = models.CharField(max_length=100)
+    valeur = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.nom} ({self.type})"

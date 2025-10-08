@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier le filtre</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-top: 20px;
+        }
+        input[type="text"],
+        input[type="date"] {
+            padding: 8px;
+            margin-bottom: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: block;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 8px 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Modifier le filtre</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label>Nom :</label>
+        <input type="text" name="nom" value="{{ filtre.nom }}" required>
+
+        <label>Type :</label>
+        <input type="text" name="type" value="{{ filtre.type }}" required>
+
+        <label>Date d'installation :</label>
+        <input type="date" name="date_installation" value="{{ filtre.date_installation|date:'Y-m-d' }}" required>
+
+        <label>Localisation :</label>
+        <input type="text" name="localisation" value="{{ filtre.localisation }}" required>
+
+        <label><input type="checkbox" name="actif" {% if filtre.actif %}checked{% endif %}> Actif</label>
+
+        <button type="submit">Enregistrer les modifications</button>
+    </form>
+</body>
+</html>

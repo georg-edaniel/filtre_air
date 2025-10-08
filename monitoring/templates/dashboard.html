@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Général</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #1e1e2f;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #12121c;
+            color: #00bfff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        nav {
+            background-color: #2c2c3c;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: #f0f0f0;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #00bfff;
+        }
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .stat-box {
+            background-color: #2a2a3a;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            padding: 20px 30px;
+            text-align: center;
+            min-width: 200px;
+            animation: fadeIn 1s ease forwards;
+            opacity: 0;
+        }
+        .stat-box:nth-child(1) { animation-delay: 0.2s; }
+        .stat-box:nth-child(2) { animation-delay: 0.4s; }
+
+        .stat-box h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #ccc;
+        }
+        .stat-box p {
+            font-size: 32px;
+            margin: 10px 0 0;
+            font-weight: bold;
+            color: #00bfff;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 20px;
+        }
+        .section {
+            background-color: #2a2a3a;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px;
+            flex: 1 1 45%;
+            min-width: 300px;
+            animation: fadeInUp 1s ease forwards;
+            opacity: 0;
+        }
+        .section:nth-child(1) { animation-delay: 0.6s; }
+        .section:nth-child(2) { animation-delay: 0.8s; }
+
+        h2 {
+            color: #00bfff;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            text-align: left;
+        }
+        th {
+            background-color: #3a3a4a;
+            color: #f0f0f0;
+        }
+        td {
+            color: #ddd;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; transform: scale(1); }
+            from { opacity: 0; transform: scale(0.95); }
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(20px); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📊 Tableau de bord des filtres et capteurs</h1>
+    </header>
+    <nav>
+        <a href="/dashboard/">Accueil</a>
+        <a href="/dashboard/filtres/">Gestion des Filtres</a>
+        <a href="/dashboard/capteurs/">Gestion des Capteurs</a>
+    </nav>
+
+    <div class="stats">
+        <div class="stat-box">
+            <h3>🧱 Filtres enregistrés</h3>
+            <p>{{ filtres|length }}</p>
+        </div>
+        <div class="stat-box">
+            <h3>📡 Capteurs actifs</h3>
+            <p>{{ capteurs|length }}</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>🧱 Filtres</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Localisation</th>
+                        <th>Actif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for filtre in filtres %}
+                    <tr>
+                        <td>{{ filtre.nom }}</td>
+                        <td>{{ filtre.type }}</td>
+                        <td>{{ filtre.date_installation }}</td>
+                        <td>{{ filtre.localisation }}</td>
+                        <td>{{ filtre.actif|yesno:"✅,❌" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5">Aucun filtre enregistré.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>📡 Capteurs</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Type</th>
+                        <th>Valeur</th>
+                        <th>Filtre associé</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for capteur in capteurs %}
+                    <tr>
+                        <td>{{ capteur.nom }}</td>
+                        <td>{{ capteur.type }}</td>
+                        <td>{{ capteur.valeur }}</td>
+                        <td>{{ capteur.filtre.nom }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4">Aucun capteur enregistré.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

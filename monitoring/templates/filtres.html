@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Filtres</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        nav {
+            background-color: #333;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"],
+        input[type="date"] {
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/dashboard/filtres/">Filtres</a>
+        <a href="/dashboard/capteurs/">Capteurs</a>
+    </nav>
+
+    <h1>Liste des filtres</h1>
+
+    <form method="get">
+        <input type="text" name="q" placeholder="Rechercher un filtre..." value="{{ query }}">
+        <button type="submit">Filtrer</button>
+    </form>
+
+    <h2>Créer un nouveau filtre</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="nom" placeholder="Nom" required>
+        <input type="text" name="type" placeholder="Type" required>
+        <input type="date" name="date_installation" required>
+        <input type="text" name="localisation" placeholder="Localisation" required>
+        <label><input type="checkbox" name="actif" checked> Actif</label>
+        <button type="submit">Créer</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Type</th>
+                <th>Date d'installation</th>
+                <th>Localisation</th>
+                <th>Actif</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for filtre in filtres %}
+            <tr>
+                <td>{{ filtre.nom }}</td>
+                <td>{{ filtre.type }}</td>
+                <td>{{ filtre.date_installation }}</td>
+                <td>{{ filtre.localisation }}</td>
+                <td>{{ filtre.actif|yesno:"Oui,Non" }}</td>
+                <td>
+                    <form method="post" action="/dashboard/filtres/delete/{{ filtre.id }}/" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Supprimer</button>
+                    </form>
+                    <form method="get" action="/dashboard/filtres/update/{{ filtre.id }}/" style="display:inline;">
+                        <button type="submit">Modifier</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">Aucun filtre enregistré.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
