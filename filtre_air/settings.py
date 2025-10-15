@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-0olk(!_t2x8%2q%wwz5&810uyp**zxdks_6phk-ceibnbb%=p@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -125,3 +125,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ALLOWED_HOSTS = ['192.168.20.126']  
+import os
+
+# clé API minimale pour les ESP32 (changez via la variable d'environnement ESP32_API_KEY)
+ESP32_API_KEY = os.environ.get('ESP32_API_KEY', 'change_me')

@@ -10,7 +10,13 @@ from monitoring.views import (
     delete_filtre, 
     delete_capteur,
     update_capteur,
-    update_filtre
+    update_filtre,
+    api_create_capteur,
+    modifier_vitesse,
+    client_interface,
+    client_salle,
+    change_filtre_salle,
+    ingest_data,
 )
 
 router = DefaultRouter()
@@ -26,7 +32,13 @@ urlpatterns = [
     path('dashboard/filtres/delete/<int:id>/', delete_filtre, name='delete_filtre'),
     path('dashboard/capteurs/delete/<int:id>/', delete_capteur, name='delete_capteur'),
     path('dashboard/capteurs/update/<int:id>/', update_capteur, name='update_capteur'),
-    path('dashboard/filtres/update/<int:id>/', update_filtre, name='update_filtre')
+    path('dashboard/filtres/update/<int:id>/', update_filtre, name='update_filtre'),
+    path('api/capteurs/', api_create_capteur),
+    path('api/filtre/<int:filtre_id>/vitesse/', modifier_vitesse),
+    path('esp32/ingest/', ingest_data),
+    path("client/", client_interface, name="client_interface"),
+    path('client/salle/<int:salle_id>/', client_salle, name='client_salle'),
+    path('client/filtre/<int:filtre_id>/change_salle/', change_filtre_salle, name='change_filtre_salle'),
 
 
 ]
