@@ -136,14 +136,30 @@ def ingest_data(request):
     type_ = request.data.get("type")
     valeur = request.data.get("valeur")
 
-    if not all([filtre_id, nom, type_, valeur]):
+    if not all([nom, type_, valeur]):
         return Response({"detail": "Champs manquants"}, status=400)
 
-    try:
-        filtre = Filtre.objects.get(id=filtre_id)
-    except Filtre.DoesNotExist:
-        return Response({"detail": "Filtre introuvable"}, status=404)
+    # Si l'ID de filtre est fourni mais invalide, ou non fourni
+    filtre = None
+    if filtre_id:
+        try:
+            filtre = Filtre.objects.get(id=filtre_id)
+        except Filtre.DoesNotExist:
+            pass
 
+    # Si aucun filtre valide trouvé → créer un "Filtre par défaut"
+    if not filtre:
+        filtre, _ = Filtre.objects.get_or_create(
+            nom="Filtre_Par_Defaut",
+            defaults={
+                "type": "Standard",
+                "date_installation": "2025-01-01",
+                "localisation": "Salle inconnue",
+                "actif": True
+            }
+        )
+
+    # Créer le capteur lié
     capteur = Capteur.objects.create(
         filtre=filtre,
         nom=nom,
@@ -151,7 +167,10 @@ def ingest_data(request):
         valeur=valeur
     )
 
-    return Response({"detail": "Donnée enregistrée", "id": capteur.id}, status=201)
+    return Response(
+        {"detail": "Donnée enregistrée", "id": capteur.id, "filtre": filtre.nom},
+        status=201
+    )
 
 
 @api_view(['POST'])
