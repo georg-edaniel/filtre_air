@@ -8,6 +8,12 @@ from rest_framework.response import Response
 from .serializers import FiltreSerializer, CapteurSerializer
 from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpResponseForbidden
+import random
+from datetime import date
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+
+
+        
 
 class FiltreViewSet(viewsets.ModelViewSet):
     queryset = Filtre.objects.all()
@@ -20,9 +26,10 @@ class CapteurViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
 
 def dashboard(request):
+    salles = Salle.objects.all()
     filtres = Filtre.objects.all()
     capteurs = Capteur.objects.all()
-    return render(request, 'dashboard.html', {'filtres': filtres, 'capteurs': capteurs})
+    return render(request, 'dashboard.html', {'filtres': filtres, 'capteurs': capteurs, 'salles': salles})
 
 def page_filtres(request):
     # Seuls les staff peuvent créer/éditer/supprimer via cette vue
@@ -118,20 +125,12 @@ def update_filtre(request, id):
 
     return render(request, 'update_filtre.html', {'filtre': filtre})
 
-
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .models import Capteur, Filtre
-
-from django.conf import settings
-
 @api_view(['POST'])
 def ingest_data(request):
     key = request.headers.get('X-ESP32-KEY')
     if key != "change_me":
         return Response({"detail": "Clé API invalide"}, status=403)
 
-    filtre_id = request.data.get("filtre")
     nom = request.data.get("nom")
     type_ = request.data.get("type")
     valeur = request.data.get("valeur")
@@ -139,27 +138,32 @@ def ingest_data(request):
     if not all([nom, type_, valeur]):
         return Response({"detail": "Champs manquants"}, status=400)
 
-    # Si l'ID de filtre est fourni mais invalide, ou non fourni
-    filtre = None
-    if filtre_id:
-        try:
-            filtre = Filtre.objects.get(id=filtre_id)
-        except Filtre.DoesNotExist:
-            pass
+    # ==== Création automatique des salles (1 à 5) ====
+    for i in range(1, 6):
+        Salle.objects.get_or_create(nom=f"Salle {i}")
 
-    # Si aucun filtre valide trouvé → créer un "Filtre par défaut"
-    if not filtre:
-        filtre, _ = Filtre.objects.get_or_create(
-            nom="Filtre_Par_Defaut",
-            defaults={
-                "type": "Standard",
-                "date_installation": "2025-01-01",
-                "localisation": "Salle inconnue",
-                "actif": True
-            }
-        )
+    # ==== Gestion stricte des filtres (1 à 5) ====
+    filtres_existants = list(Filtre.objects.all())
+    filtre_count = len(filtres_existants)
 
-    # Créer le capteur lié
+    if filtre_count < 5:
+        # Crée les filtres manquants jusqu'à 5
+        for i in range(filtre_count + 1, 6):
+            Filtre.objects.get_or_create(
+                nom=f"filtre{i:03d}",
+                defaults={
+                    "type": "Standard",
+                    "date_installation": date.today(),
+                    "localisation": f"Salle {i}",
+                    "actif": True,
+                    "vitesse": random.randint(1, 10),
+                }
+            )
+
+    # ==== Sélection du filtre aléatoire (entre 1 et 5) ====
+    filtre = random.choice(Filtre.objects.filter(nom__in=[f"filtre{i:03d}" for i in range(1, 6)]))
+
+    # ==== Création du capteur associé ====
     capteur = Capteur.objects.create(
         filtre=filtre,
         nom=nom,
@@ -168,7 +172,12 @@ def ingest_data(request):
     )
 
     return Response(
-        {"detail": "Donnée enregistrée", "id": capteur.id, "filtre": filtre.nom},
+        {
+            "detail": "Donnée enregistrée ✅",
+            "capteur_id": capteur.id,
+            "filtre": filtre.nom,
+            "salle": filtre.localisation,
+        },
         status=201
     )
 

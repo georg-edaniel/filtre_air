@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails de la salle - {{ salle.nom }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #1e1e2f;
+            color: #f0f0f0;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #00bfff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #444;
+        }
+        th {
+            background-color: #3a3a4a;
+        }
+        td {
+            color: #ddd;
+        }
+        a {
+            color: #00bfff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏢 Salle : {{ salle.nom }}</h1>
+
+    <h2>🧱 Filtres associés</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Localisation</th>
+                <th>Actif</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for filtre in filtres %}
+            <tr>
+                <td>{{ filtre.nom }}</td>
+                <td>{{ filtre.type }}</td>
+                <td>{{ filtre.date_installation }}</td>
+                <td>{{ filtre.localisation }}</td>
+                <td>{{ filtre.actif|yesno:"✅,❌" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">Aucun filtre dans cette salle.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>📡 Capteurs associés</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Type</th>
+                <th>Valeur</th>
+                <th>Filtre</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for capteur in capteurs %}
+            <tr>
+                <td>{{ capteur.nom }}</td>
+                <td>{{ capteur.type }}</td>
+                <td>{{ capteur.valeur }}</td>
+                <td>{{ capteur.filtre.nom }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">Aucun capteur dans cette salle.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><a href="/dashboard/salles/">← Retour à la liste des salles</a></p>
+</body>
+</html>

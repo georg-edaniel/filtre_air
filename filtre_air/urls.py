@@ -17,6 +17,8 @@ from monitoring.views import (
     client_salle,
     change_filtre_salle,
     ingest_data,
+    
+    
 )
 
 router = DefaultRouter()
@@ -37,8 +39,11 @@ urlpatterns = [
     path('api/filtre/<int:filtre_id>/vitesse/', modifier_vitesse),
     path('esp32/ingest/', ingest_data),
     path("client/", client_interface, name="client_interface"),
-    path('client/salle/<int:salle_id>/', client_salle, name='client_salle'),
+    path('client/salles/<int:salle_id>/', client_salle, name='client_salle'),
     path('client/filtre/<int:filtre_id>/change_salle/', change_filtre_salle, name='change_filtre_salle'),
+   
 
+    
+    
 
 ]

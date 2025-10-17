@@ -1,0 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier Salle</title>
+</head>
+<body>
+    <h1>Modifier la salle</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="nom" value="{{ salle.nom }}" required>
+        <button type="submit">Enregistrer</button>
+    </form>
+    <a href="{% url 'salles' %}">Retour à la liste</a>
+</body>
+</html>
