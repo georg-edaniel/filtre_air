@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Salles</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f5f7fa; font-family: 'Poppins', sans-serif; }
+    .card { transition: transform 0.2s; cursor: pointer; }
+    .card:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body>
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1>👋 Dashboard Client - Salles</h1>
+    </div>
+    <div>
+      <a href="/client/" class="btn btn-secondary me-2">← Accueil</a>
+      <a href="{% url 'creer_salle' %}" class="btn btn-success">➕ Créer une salle</a>
+    </div>
+  </div>
+
+  <div class="row">
+    {% for salle in salles %}
+      <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">{{ salle.nom }}</h5>
+            <p class="card-text">Capacité: {{ salle.capacite }}</p>
+            <p class="card-text">Statut: <strong>{{ salle.status }}</strong></p>
+            <a href="{% url 'modifier_salle' salle.id %}" class="btn btn-warning btn-sm me-2">Modifier</a>
+            <a href="{% url 'supprimer_salle' salle.id %}" class="btn btn-danger btn-sm">Supprimer</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted">Aucune salle disponible.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

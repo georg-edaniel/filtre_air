@@ -10,9 +10,26 @@ from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpResponseForbidden
 import random
 from datetime import date
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from .forms import SalleForm
 
 
+def client_salle_all(request):
+    salles = Salle.objects.all()
+    return render(request, 'client/client_salle_all.html', {'salles': salles})
+
+def creer_salle(request):
+    # logique pour créer une salle
+    return render(request, 'client/creer_salle.html')
+
+def modifier_salle(request, id):
+    salle = get_object_or_404(Salle, id=id)
+    # ici tu peux ajouter un formulaire de modification
+    return render(request, 'client/modifier_salle.html', {'salle': salle})
+
+def supprimer_salle(request, id):
+    salle = get_object_or_404(Salle, id=id)
+    salle.delete()
+    return redirect('client_salle_all')
         
 
 class FiltreViewSet(viewsets.ModelViewSet):
@@ -258,3 +275,4 @@ def change_filtre_salle(request, filtre_id):
     # sinon rediriger vers la page client pour affichage classique
     from django.shortcuts import redirect
     return redirect(f"/client/?salle={filtre.salle.id if filtre.salle else ''}")
+
