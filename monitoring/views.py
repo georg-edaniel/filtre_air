@@ -12,6 +12,7 @@ import random
 from datetime import date
 import requests
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 
 
 
@@ -20,13 +21,35 @@ def client_salle_all(request):
     return render(request, 'client/client_salle_all.html', {'salles': salles})
 
 def creer_salle(request):
-    # logique pour créer une salle
-    return render(request, 'client/creer_salle.html')
+    if request.method == 'POST':
+        # Récupérer le nom depuis le formulaire
+        nom = request.POST.get('nom')
+        
+        # Créer la salle
+        Salle.objects.create(nom=nom)
+        
+        # Rediriger vers la liste des salles
+        return redirect('client_salle_all')  # Adaptez selon le nom de votre URL
+    
+    # Afficher le formulaire de création
+    return render(request, 'creer_salle.html')
 
 def modifier_salle(request, id):
     salle = get_object_or_404(Salle, id=id)
-    # ici tu peux ajouter un formulaire de modification
-    return render(request, 'client/modifier_salle.html', {'salle': salle})
+    
+    if request.method == 'POST':
+        # Récupérer le nouveau nom depuis le formulaire
+        nouveau_nom = request.POST.get('nom')
+        
+        # Mettre à jour la salle
+        salle.nom = nouveau_nom
+        salle.save()
+        
+        # Rediriger vers la liste des salles
+        return redirect('client_salle_all')  # Adaptez selon le nom de votre URL
+    
+    # Afficher le formulaire de modification
+    return render(request, 'modifier_salle.html', {'salle': salle})
 
 def supprimer_salle(request, id):
     salle = get_object_or_404(Salle, id=id)
@@ -366,3 +389,7 @@ def client_view(request):
     }
     return render(request, 'client/client_dashboard.html', context)
 
+@login_required
+def deconnexion(request):
+    logout(request)
+    return redirect('login')  #
