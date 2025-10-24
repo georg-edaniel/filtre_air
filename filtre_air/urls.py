@@ -57,7 +57,7 @@ urlpatterns = [
     # logout (redirection configurée par LOGOUT_REDIRECT_URL)
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
-    # ta route client (ex.)
+    # ta route client 
     path('client/', client_view, name='client_home'),
     # ... autres routes ...
     
