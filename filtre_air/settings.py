@@ -15,7 +15,11 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+# URL où on envoie les utilisateurs non authentifiés
+LOGIN_URL = '/login/'
+# où rediriger après connexion réussie (par défaut)
+LOGIN_REDIRECT_URL = '/client/'   
+LOGOUT_REDIRECT_URL = '/login/'
 
 
 # Quick-start development settings - unsuitable for production
@@ -41,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'monitoring',
+     'rest_framework.authtoken', 
 ]
 
 MIDDLEWARE = [
@@ -131,3 +136,22 @@ import os
 
 # clé API minimale pour les ESP32 (changez via la variable d'environnement ESP32_API_KEY)
 ESP32_API_KEY = os.environ.get('ESP32_API_KEY', 'change_me')
+
+REST_FRAMEWORK = {
+    # accepter à la fois Session (navigateur) et Token/JWT (clients externes)
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',               # token simple
+        'rest_framework_simplejwt.authentication.JWTAuthentication',       # JWT (si installé)
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',  # par défaut : requiert authentification
+    ),
+}
+
+CSRF_TRUSTED_ORIGINS = ["http://192.168.20.126:8000"]
+
+# Configuration d'authentification
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]

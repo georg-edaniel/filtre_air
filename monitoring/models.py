@@ -1,7 +1,5 @@
 from django.db import models
 
-from django.db import models
-
 class Salle(models.Model):
     nom = models.CharField(max_length=100)
 
@@ -14,6 +12,10 @@ class Filtre(models.Model):
     localisation = models.CharField(max_length=100)
     actif = models.BooleanField(default=True)
     vitesse = models.IntegerField(default=0)  # Vitesse en m/s
+    broche_esp32 = models.IntegerField(default=0, help_text="broche GPIO sur l'esp32")  # Nouvelle ligne pour broche ESP32
+    
+    def __str__(self):
+        return self.nom
 
 class Capteur(models.Model):
     filtre = models.ForeignKey(Filtre, on_delete=models.CASCADE)

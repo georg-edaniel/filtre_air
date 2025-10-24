@@ -60,13 +60,42 @@
         th {
             background-color: #eee;
         }
+        /* Style pour le bouton supprimer */
+        .btn-delete {
+            background-color: #dc3545;
+        }
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+        .user-info {
+            background-color: #e9ecef;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
     </style>
+    <script>
+        function confirmDelete() {
+            return confirm('Êtes-vous sûr de vouloir supprimer ce filtre ?');
+        }
+    </script>
 </head>
 <body>
     <nav>
         <a href="/dashboard/filtres/">Filtres</a>
         <a href="/dashboard/capteurs/">Capteurs</a>
     </nav>
+
+    <!-- Affichage des informations utilisateur -->
+    <div class="user-info">
+        {% if user.is_authenticated %}
+            Connecté en tant que : <strong>{{ user.username }}</strong> 
+            | Statut staff : <strong>{{ user.is_staff|yesno:"Oui,Non" }}</strong>
+            | <a href="{% url 'admin:logout' %}">Déconnexion</a>
+        {% else %}
+            <a href="{% url 'admin:login' %}">Connexion</a>
+        {% endif %}
+    </div>
 
     <h1>Liste des filtres</h1>
 
@@ -75,6 +104,8 @@
         <button type="submit">Filtrer</button>
     </form>
 
+    <!-- MODIFICATION : Condition pour afficher le formulaire de création seulement au staff -->
+    {% if user.is_authenticated and user.is_staff %}
     <h2>Créer un nouveau filtre</h2>
     <form method="post">
         {% csrf_token %}
@@ -85,6 +116,16 @@
         <label><input type="checkbox" name="actif" checked> Actif</label>
         <button type="submit">Créer</button>
     </form>
+    {% elif user.is_authenticated %}
+    <div style="background-color: #fff3cd; padding: 10px; border: 1px solid #ffeaa7; margin-bottom: 20px;">
+        <strong>Information :</strong> Vous n'avez pas les permissions pour créer ou modifier des filtres.
+        Contactez l'administrateur si vous avez besoin de droits supplémentaires.
+    </div>
+    {% else %}
+    <div style="background-color: #f8d7da; padding: 10px; border: 1px solid #f5c6cb; margin-bottom: 20px;">
+        <strong>Attention :</strong> Vous devez être connecté pour accéder aux fonctionnalités de gestion.
+    </div>
+    {% endif %}
 
     <table>
         <thead>
@@ -106,13 +147,21 @@
                 <td>{{ filtre.localisation }}</td>
                 <td>{{ filtre.actif|yesno:"Oui,Non" }}</td>
                 <td>
-                    <form method="post" action="/dashboard/filtres/delete/{{ filtre.id }}/" style="display:inline;">
+                    <!-- MODIFICATION : Formulaire de suppression avec confirmation et condition staff -->
+                    {% if user.is_authenticated and user.is_staff %}
+                    <form method="post" action="{% url 'page_filtres' %}" style="display:inline;" onsubmit="return confirmDelete();">
                         {% csrf_token %}
-                        <button type="submit">Supprimer</button>
+                        <input type="hidden" name="delete_id" value="{{ filtre.id }}">
+                        <button type="submit" class="btn-delete">Supprimer</button>
                     </form>
                     <form method="get" action="/dashboard/filtres/update/{{ filtre.id }}/" style="display:inline;">
                         <button type="submit">Modifier</button>
                     </form>
+                    {% elif user.is_authenticated %}
+                    <span style="color: #6c757d; font-style: italic;">Lecture seule</span>
+                    {% else %}
+                    <span style="color: #dc3545;">Connectez-vous</span>
+                    {% endif %}
                 </td>
             </tr>
             {% empty %}

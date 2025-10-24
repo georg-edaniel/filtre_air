@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from django.contrib.auth import views as auth_views
 from monitoring.views import (
     FiltreViewSet,
     CapteurViewSet,
@@ -21,6 +22,8 @@ from monitoring.views import (
     modifier_salle,
     supprimer_salle,
     creer_salle,
+    client_view,
+    
     
 )
 
@@ -47,9 +50,16 @@ urlpatterns = [
     path('client/filtre/<int:filtre_id>/change_salle/', change_filtre_salle, name='change_filtre_salle'),
    path('modifier_salle/<int:id>/', modifier_salle, name='modifier_salle'),
     path('supprimer_salle/<int:id>/', supprimer_salle, name='supprimer_salle'),
-   path('client/creer_salle/', creer_salle, name='creer_salle')
+   path('client/creer_salle/', creer_salle, name='creer_salle'),
 
-    
+    # page de login (GET affiche le formulaire, POST connecte)
+    path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
+    # logout (redirection configurée par LOGOUT_REDIRECT_URL)
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+
+    # ta route client (ex.)
+    path('client/', client_view, name='client_home'),
+    # ... autres routes ...
     
 
 ]

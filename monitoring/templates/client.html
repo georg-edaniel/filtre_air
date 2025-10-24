@@ -31,7 +31,7 @@
       align-items: center;
       padding: 24px;
     }
-  .container{ width:100%; max-width:1200px; padding:0 16px; }
+    .container{ width:100%; max-width:1200px; padding:0 16px; }
 
     header {
       text-align: left;
@@ -157,7 +157,28 @@
           <h1>👋 Dashboard Client</h1>
           <p>Contrôlez vos filtres d’air en toute simplicité</p>
         </div>
-        <div style="text-align:right; color:var(--muted); font-size:0.9rem">Client view</div>
+
+        <!-- === Bouton Déconnexion (sécurisé POST) ajouté ici === -->
+        <div style="text-align:right; color:var(--muted); font-size:0.9rem; display:flex; align-items:center; gap:10px;">
+          <span>Client view</span>
+
+          {% if user.is_authenticated %}
+            <!-- Formulaire POST (logout sécurisé) -->
+            <!-- Bouton Déconnexion (GET) : coller à la place du formulaire POST -->
+            <div style="text-align:right; color:var(--muted); font-size:0.9rem; display:flex; align-items:center; gap:10px;">
+              <span>Client view</span>
+              {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}"
+                  style="background:transparent;border:1px solid rgba(255,255,255,0.08);padding:6px 10px;border-radius:8px;color:#fff;text-decoration:none;box-shadow:0 6px 18px rgba(30,144,255,0.08);">
+                  Déconnexion
+                </a>
+              {% endif %}
+            </div>
+
+          {% endif %}
+        </div>
+        <!-- === fin bouton Déconnexion === -->
+
       </div>
       {% if mode == 'salle' %}
         <div style="margin-top:12px;display:flex;justify-content:flex-end;">
